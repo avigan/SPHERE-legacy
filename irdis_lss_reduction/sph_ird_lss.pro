@@ -31,7 +31,8 @@
 ;    - aroot: path to the working directory. In this directory, the
 ;      raw data must be in a "raw/" subdirectory
 ;    - resol: specify LRS or MRS
-;    - suffix: optional suffix that will be appended to the files created by the pipeline
+;    - suffix: optional suffix that will be appended to the files
+;      created by the pipeline
 ;    - pla_sep: separation of the planet in the data in as. This value
 ;      should be negative if in the OB you entered the on-sky PA of
 ;      the companion. For example, if the separation is 0.5" and the
@@ -1085,10 +1086,15 @@ if keyword_set(do_combine) then begin
    fftref0 = fft(ref0,-1,dim=1)
    fftref1 = fft(ref1,-1,dim=1)
    
-   ;; center left field
+   ;; center left field   
    ref0 = img0
-   ;; message,'!!!!!!!!!!!!! Warning !!!!!!!!!!!!!',/inform
-   ;; ref0[197-10:197+10,*] = 0
+   hide_planet = 0
+   if keyword_set(hide_planet) then begin
+      message,'!!!! Warning !!!! Hiding planet',/inform
+      pla_cen = 203
+      pla_ext = 10
+      ref0[pla_cen-pla_ext:pla_cen+pla_ext,*] = 0
+   endif
    inv0 = reverse(ref0,1)
    
    fftref0 = fft(ref0,-1,dim=1)
@@ -1110,8 +1116,10 @@ if keyword_set(do_combine) then begin
    
    ;; center right field
    ref1 = img1
-   ;; message,'!!!!!!!!!!!!! Warning !!!!!!!!!!!!!',/inform
-   ;; ref1[197-10:197+10,*] = 0   
+   if keyword_set(hide_planet) then begin
+      message,'!!!! Warning !!!! Hiding planet',/inform
+      ref1[pla_cen-pla_ext:pla_cen+pla_ext,*] = 0
+   endif
    inv1 = reverse(ref1,1)
 
    fftref1 = fft(ref1,-1,dim=1)
@@ -1192,7 +1200,7 @@ if keyword_set(do_combine) then begin
       lmin = 920
       lmax = 1900
    endif else message,'Resolution '+resol+' is undefined!'
-   
+
    for ifield=0,1 do begin
       dim = (size(psf,/dim))[0]
       ll  = where((lmin le lam[*,ifield]) and (lam[*,ifield] le lmax),nll0)
@@ -1225,13 +1233,6 @@ if keyword_set(do_combine) then begin
       ;; coro_flat = cflat[cut:dim-1-cut,ll,ifield]
       ;; coro_flat_lin = reverse(total(coro_flat,1) / (size(coro_flat))[1])
       ;; writefits,aroot+'products/coro_flat'+suffix+'_F'+numformat(ifield)+'.fits.gz',coro_flat_lin,/compress
-      
-      dim = (size(psf_s,/dim))
-      ds9
-      !v->im,coro_s[*,*,*,0]
-      !v->box,(dim[0]-1)/2.,(dim[1]-1)/2.,30,dim[1],0
-      ;; !v->im,psf_s
-      ;; !v->line,(dim[0]-1)/2.,0,(dim[0]-1)/2.,dim[1]
    endfor
 endif
 
