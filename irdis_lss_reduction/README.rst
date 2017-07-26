@@ -17,7 +17,7 @@ Credits
 
 If you use this pipeline, please cite the following reference:
 
-.. image:: <a href="http://ascl.net/1603.001"><img src="https://img.shields.io/badge/ascl-1603.001-blue.svg?colorB=262255" alt="ascl:1603.001" /></a>
+.. image:: https://img.shields.io/badge/ascl-1603.001-blue.svg?colorB=262255
 
 * `Vigan, 2016, ASCL, 1603.001 <https://ui.adsabs.harvard.edu/#abs/2016ascl.soft03001V/abstract>`_
 
