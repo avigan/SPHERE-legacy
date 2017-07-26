@@ -105,7 +105,7 @@
 ;         3.28147      2.97996
 ;
 ;   In this case, the correction factors to apply to IRDIS left and
-;   right images would:
+;   right images would be:
 ;
 ;   Image_left_corrected  = Image_left_raw  * 10^(3.28147)
 ;   Image_right_corrected = Image_right_raw * 10^(2.97996)
@@ -118,6 +118,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;   arthur.vigan - 07/2017
+;                  Code transitionned to GitHub for improved support
+;                  
 ;   arthur.vigan - 07/2015 - additonnal documentation for distribution
 ;                            ND filter specified by its name rather
 ;                            than value
@@ -140,25 +143,7 @@
 ;
 ; LICENSE:
 ;
-;   This code is release under the MIT license. The full text of the
-;   license is included in a separate file LICENSE.txt.
-;
-;   The developement of the SPHERE instrument has demanded a
-;   tremendous effort from many scientists, who have devoted several
-;   years of their life to design, build, test and commission this new
-;   instrument. To recognize this work, we kindly ask you to cite the
-;   relevant papers in your scientific work. More specifically,
-;   because this code is dedicated to the SPHERE/IRDIS subsystem,
-;   please cite the papers relevant to your observations from the
-;   following list:
-;
-;    * IRDIS general descripton: Dohlen et al., 2008, SPIE, 2014
-;    * Dual-Band Imaging mode: Vigan et al., 2010, MNRAS, 407, 71
-;    * Dual-Polarization Imaging mode: Langlois et al., 2014, SPIE, 9147
-;
-;   We are grateful for your effort, and hope that this tool will
-;   contribute to your scientific work and discoveries. Please feel
-;   free to report any bug or possible improvement to the author(s)
+;   This code is released under the MIT license.
 ;
 ;-
 
