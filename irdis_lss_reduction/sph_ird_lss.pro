@@ -271,49 +271,18 @@
 ;
 ;  The following SPHERE-specific library is also necessary:
 ;
-;    * SPHERE transmission: http://astro.vigan.fr/tools.html
+;    * SPHERE transmission:
+;      https://github.com/avigan/SPHERE-legacy/tree/master/sphere_transmission
 ;
 ;  To create the standard calibrations, it is also required that you
 ;  install the officiel sphere pipeline from ESO:
 ;
 ;    * http://www.eso.org/sci/software/pipelines/
 ;
-; AUTHOR:
-; 
-;   Arthur Vigan
-;   Laboratoire d'Astrophysique de Marseille
-;   arthur.vigan@lam.fr
-;
-; LICENSE:
-;
-;   This code is release under the MIT license. The full text of the
-;   license is included in a separate file LICENSE.txt.
-;
-;   The developement of the SPHERE instrument has demanded a
-;   tremendous effort from many scientists, who have devoted several
-;   years of their life to design, build, test and commission this new
-;   instrument. To recognize this work, we kindly ask you to cite the
-;   relevant papers in your scientific work. More specifically,
-;   because this code is dedicated to the SPHERE/IRDIS subsystem,
-;   please cite the two following papers:
-;
-;    * IRDIS general descripton: Dohlen et al., 2008, SPIE, 7014
-;    * Long-Slit Spectroscopy mode: Vigan et al., 2008, A&A, 489, 1345
-;
-;   In addition, this analysis code is available on the Astrophysics
-;   Source Code Library:
-;
-;    * http://ascl.net/1603.001
-;
-;   It can be cited explicitely:
-;
-;    * Vigan, 2016, ASCL, 1603.001
-;
-;   We are grateful for your effort, and hope that this tool will
-;   contribute to your scientific work and discoveries. Please feel
-;   free to report any bug or possible improvement to the author(s)
-;
 ; MODIFICATION HISTORY:
+;
+;   arthur.vigan - 07/2017
+;                  Code transitionned to GitHub for improved support
 ;
 ;   arthur.vigan - v1.2 - 02/2016
 ;                  fix calibrations for LRS mode, improved
@@ -330,7 +299,16 @@
 ;   arthur.vigan - v1.0 - 01/2016
 ;                  first public version based on AIT and commissioning
 ;                  tools
-;                            
+; AUTHOR:
+; 
+;   Arthur Vigan
+;   Laboratoire d'Astrophysique de Marseille
+;   arthur.vigan@lam.fr
+;
+; LICENSE:
+;
+;   This code is released under the MIT license. 
+;
 ;-
 
 do_calib    = 0     ;; create static calibrations

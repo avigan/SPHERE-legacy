@@ -145,9 +145,13 @@
 ;
 ;  The following SPHERE-specific library is also necessary:
 ;
-;    * SPHERE transmission: http://astro.vigan.fr/tools.html
+;    * SPHERE transmission:
+;      https://github.com/avigan/SPHERE-legacy/tree/master/sphere_transmission
 ;
 ; MODIFICATION HISTORY:
+;
+;  arthur.vigan - 07/2017
+;                 Code transitionned to GitHub for improved support
 ;
 ;  arthur.vigan - 08/2015 - public version of personnal tools
 ;
@@ -159,23 +163,7 @@
 ;
 ; LICENSE:
 ;
-;   This code is release under the MIT license. The full text of the
-;   license is included in a separate file LICENSE.txt.
-;
-;   The developement of the SPHERE instrument has demanded a
-;   tremendous effort from many scientists, who have devoted several
-;   years of their life to design, build, test and commission this new
-;   instrument. To recognize this work, we kindly ask you to cite the
-;   relevant papers in your scientific work. More specifically,
-;   because this script is the core of our public SPHERE/IFS reduction
-;   pipeline, we would be grateful if you could cite the following
-;   paper in any publication making use of it:
-;
-;     Vigan et al., 2015, MNRAS, 454, 129
-;
-;   We thank you for your effort, and hope that this tool will
-;   contribute to your scientific work and discoveries. Please feel
-;   free to report any bug or possible improvement to the author
+;   This code is released under the MIT license. 
 ;
 ;-
 
