@@ -618,7 +618,7 @@ if keyword_set(do_combine) then begin
 
          if keyword_set(fft_shift) then begin
             ;; FFT-based shift
-            nframe = fftshift(nframe,xs=shiftx_rem,ys=shifty_rem)            
+            nframe = fftshift(nframe,shiftx_rem,shifty_rem)            
          endif else begin
             ;; interpolation-based
             nframe = translate(nframe,shiftx_rem,shifty_rem)
