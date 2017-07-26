@@ -17,11 +17,7 @@ Credits
 
 If you use this pipeline, please cite the following reference:
 
-.. image:: https://img.shields.io/badge/ascl-1603.001-blue.svg?colorB=262255
-
-* `Vigan, 2016, ASCL, 1603.001 <https://ui.adsabs.harvard.edu/#abs/2016ascl.soft03001V/abstract>`_
-
-<a href="http://ascl.net/1603.001"><img src="https://img.shields.io/badge/ascl-1603.001-blue.svg?colorB=262255" alt="ascl:1603.001" /></a>
+* `Vigan, 2016, ASCL, 1603.001 <https://ui.adsabs.harvard.edu/#abs/2016ascl.soft03001V/abstract>`_ .. image:: https://img.shields.io/badge/ascl-1603.001-blue.svg?colorB=262255
 
 The development of the SPHERE instrument has demanded a tremendous effort from many scientists, who have devoted several years of their life to design, build, test and commission the instrument. To recognize this work, we kindly ask you to cite the relevant instrumental papers in your scientific work. The reference papers for SPHERE and the IRDIS/LSS mode are:
 
