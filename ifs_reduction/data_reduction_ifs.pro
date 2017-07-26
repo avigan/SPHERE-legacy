@@ -180,20 +180,26 @@ fft_shift = 0    ;; 0: interpolation-based shift; 1: FFT-based shift
 ;;
 root = '/data/TargetDirectory/'
 
-
-
 ;; #####################################################################################
+
+;; read data files
+files = sph_ifs_read_data_files(root+'/products/file_list.dat')
+wave_file = files.wave_file
+cent_file = files.cent_file
+flux_file = files.flux_file
+coro_file = files.coro_file
 
 ;; fixed parameters
 nlambda = 39       ;; number of wavelength channels (no do modify!)
 ntaille = 280      ;; final size of the data cubes (do not modify!)
-pixel   = 7.3      ;; pixel size [mas]
-
-data_file = [cent_file,flux_file,coro_file]
+pixel   = 7.46     ;; IFS pixel size [mas] (see Maire et al. 2016, SPIE 9908)
+tnorth  = -1.75    ;; mean true North correction [deg] (see Maire et al. 2016, SPIE 9908)
 
 ;;
 ;; additional cleaning of the (x,y,lambda) science cubes
 ;;
+data_file = [cent_file,flux_file,coro_file]
+
 if keyword_set(do_clean) then begin
    print,'Final cleaning of the data'
    nfiles = n_elements(data_file)
@@ -241,6 +247,9 @@ if keyword_set(do_clean) then begin
             ncube[*,*,l] = frame_out
          endfor         
 
+         ;; even number of pixel
+         ncube = ncube[0:taille-2,0:taille-2,*]
+         
          ;; save cleaned data
          ditnum = string(d,format='(I05)')
          writefits,root+'/products/'+data_file[f]+'_'+ditnum+'_clean.fits',ncube,hdr
@@ -609,8 +618,7 @@ if keyword_set(do_combine) then begin
 
          if keyword_set(fft_shift) then begin
             ;; FFT-based shift
-            ;;nframe = subpixel_shift(nframe,xs=shiftx_rem,ys=shifty_rem)
-            message,'No FFT-based shifting routine is provided. Please use your own.'
+            nframe = fftshift(nframe,xs=shiftx_rem,ys=shifty_rem)            
          endif else begin
             ;; interpolation-based
             nframe = translate(nframe,shiftx_rem,shifty_rem)
