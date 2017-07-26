@@ -160,6 +160,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;  arthur.vigan - 07/2017
+;                 Code transitionned to GitHub for improved support
+;                 
 ;  arthur.vigan - 02/2016 - updated the pupil offset value
 ;
 ;  arthur.vigan - 08/2015 - commented for distribution
@@ -187,29 +190,8 @@
 ;
 ; LICENSE:
 ;
-;   This code is release under the MIT license. The full text of the
-;   license is included in a separate file LICENSE.txt.
-;
-;   The developement of the SPHERE instrument has demanded a
-;   tremendous effort from many scientists, who have devoted several
-;   years of their life to design, build, test and commission this new
-;   instrument. To recognize this work, we kindly ask you to cite the
-;   relevant papers in your scientific work. More specifically,
-;   because this code is dedicated to the SPHERE/IFS subsystem, please
-;   cite the papers relevant to your observations from the following
-;   list:
-;
-;    * IFS general descripton: Claudi et al., 2008, SPIE, 7014
-;    * performance: Mesa et al., 2015, A&A, 576, 121
-;
-;   And in particular, if you are using this routine:
-;
-;    * reduction pipeline: Vigan et al., 2015, MNRAS, 454, 129
-;
-;   We are grateful for your effort, and hope that this tool will
-;   contribute to your scientific work and discoveries. Please feel
-;   free to report any bug or possible improvement to the author(s)
-;
+;   This code is released under the MIT license.
+;   
 ;-
 
 pro sph_ifs_preprocess
@@ -377,7 +359,10 @@ pro sph_ifs_preprocess
 
      ;; derotator offset
      DROT_mode = strtrim(sxpar_eso(hdr,'HIERARCH ESO INS4 DROT2 MODE'),2)
-     if (DROT_mode eq 'ELEV') then pupoff = 135.87D - 100.46D else pupoff = 0D
+     ;; PA_on-sky = PA_detector + PARANGLE + True_North + PUPOFFSET + IFSOFFSET
+     ;; PUPOFFSET = 135.99±0.11
+     ;; IFSOFFSET = 100.48±0.0.10
+     if (DROT_mode eq 'ELEV') then pupoff = 135.99D - 100.48D else pupoff = 0D
      
      ;; observatory for PA calculation
      geolat = sxpar_eso(hdr,'HIERARCH ESO TEL GEOLAT')
@@ -395,6 +380,15 @@ pro sph_ifs_preprocess
      ;; seeing
      seeing_beg = sxpar_eso(hdr,'HIERARCH ESO TEL AMBI FWHM START')
      seeing_end = sxpar_eso(hdr,'HIERARCH ESO TEL AMBI FWHM END')
+
+     ;; derotator drift correction
+     alt_beg = sxpar_eso(hdr,'HIERARCH ESO TEL ALT')
+     drot2_beg = sxpar_eso(hdr,'HIERARCH ESO INS4 DROT2 BEGIN')
+     if jul_out lt date_conv('2016-07-12','J') then begin
+        corr = atan(tan((alt_beg-2.*drot2_beg)*!pi/180.))*180./!pi
+     endif else begin
+        corr = 0
+     endelse
      
      for d=0,ndit-1 do begin
         ;; time for each DIT
@@ -408,15 +402,15 @@ pro sph_ifs_preprocess
         ;; parallactic angle     
         ct2lst,lst_beg,geolon,dummy,time_beg
         ha_beg = lst_beg-ra
-        pa_beg = parangle(ha_beg,dec,geolat)
+        pa_beg = parangle(ha_beg,dec,geolat) + corr
 
         ct2lst,lst_mid,geolon,dummy,time_mid
         ha_mid = lst_mid-ra
-        pa_mid = parangle(ha_mid,dec,geolat)     
+        pa_mid = parangle(ha_mid,dec,geolat) + corr
 
         ct2lst,lst_end,geolon,dummy,time_end
         ha_end = lst_end-ra
-        pa_end = parangle(ha_end,dec,geolat)
+        pa_end = parangle(ha_end,dec,geolat) + corr
 
         ;; final values
         frames[idx].file       = file_basename(raw_file[f])
@@ -733,6 +727,19 @@ pro sph_ifs_preprocess
      endif
 
      ;;
+     ;; check ALPHA/DELTA values (necessary to process science data)
+     ;;
+     alpha = sxpar_eso(hdr, 'HIERARCH ESO TEL TARG ALPHA')
+     delta = sxpar_eso(hdr, 'HIERARCH ESO TEL TARG DELTA')
+     if (alpha eq 0) or (delta eq 0) then begin
+        ;; if absent (e.g. when pre-processing the wavelength
+        ;; calibration) put dummy values
+        ;; format is HHMMSS.ss and DDMMSS.ss
+        sxaddpar_eso, hdr, 'HIERARCH ESO TEL TARG ALPHA',  120000.0
+        sxaddpar_eso, hdr, 'HIERARCH ESO TEL TARG DELTA', -900000.0
+     endif
+     
+     ;;
      ;; save result
      ;;
      suffix = '_preproc'
@@ -754,6 +761,5 @@ pro sph_ifs_preprocess
      print
      
   endfor
-  
-  fin:
+
 end
