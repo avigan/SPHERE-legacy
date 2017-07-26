@@ -58,6 +58,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;  arthur.vigan - 07/2017
+;                 Code transitionned to GitHub for improved support
+;                 
 ;  arthur.vigan - 08/2015 - commented for distribution
 ;
 ;  arthur.vigan - 07/2015 - original version with basic features
@@ -70,28 +73,7 @@
 ;
 ; LICENSE:
 ;
-;   This code is release under the MIT license. The full text of the
-;   license is included in a separate file LICENSE.txt.
-;
-;   The developement of the SPHERE instrument has demanded a
-;   tremendous effort from many scientists, who have devoted several
-;   years of their life to design, build, test and commission this new
-;   instrument. To recognize this work, we kindly ask you to cite the
-;   relevant papers in your scientific work. More specifically,
-;   because this code is dedicated to the SPHERE/IFS subsystem, please
-;   cite the papers relevant to your observations from the following
-;   list:
-;
-;    * IFS general descripton: Claudi et al., 2008, SPIE, 7014
-;    * performance: Mesa et al., 2015, A&A, 576, 121
-;
-;   And in particular, if you are using this routine:
-;
-;    * reduction pipeline: Vigan et al., 2015, MNRAS, 454, 129
-;
-;   We are grateful for your effort, and hope that this tool will
-;   contribute to your scientific work and discoveries. Please feel
-;   free to report any bug or possible improvement to the author(s)
+;   This code is released under the MIT license.
 ;   
 ;-
 
@@ -236,7 +218,7 @@ pro sph_ifs_detector_flat_manual
   nflat = sigma_filter(nflat,5.,n_sigma=5,n_change=nchange)
 
   final_flat = nflat / median(nflat)
-  final_bpm  = (final_flat lt 0.95) or (final_flat gt 1.1)
+  final_bpm  = (final_flat lt 0.90) or (final_flat gt 1.1)
 
   ;;
   ;; field edges
@@ -255,5 +237,4 @@ pro sph_ifs_detector_flat_manual
   writefits,ffname+lamp_suffix+'.fits',final_flat,hdr0
   writefits,bpname+lamp_suffix+'.fits',final_bpm,hdr0
      
-  fin:
 end

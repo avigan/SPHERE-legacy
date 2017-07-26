@@ -180,10 +180,7 @@ fft_shift = 0    ;; 0: interpolation-based shift; 1: FFT-based shift
 ;;
 root = '/data/TargetDirectory/'
 
-wave_file = 'SPHER.2015-01-01T00:00:00.000'
-cent_file = 'SPHER.2015-01-01T00:00:01.000'
-flux_file = ['SPHER.2015-01-01T00:00:02.000']
-coro_file = ['SPHER.2015-01-01T00:00:03.000','...']
+
 
 ;; #####################################################################################
 
