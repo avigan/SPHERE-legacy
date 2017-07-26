@@ -211,10 +211,14 @@ MODE=YJ
 # analysis parameters
 #
 
+#------------------------------------------------------------------
 # first step: sanity check!
+#------------------------------------------------------------------
 DO_SANITY_CHECK=1       # sanity checks
 
+#------------------------------------------------------------------
 # basic calibrations
+#------------------------------------------------------------------
 DO_CALIB=0              # perform basic calibrations
 
 DO_DET_DARK=1           # dark/background or sky
@@ -223,7 +227,9 @@ DO_SPEC_POS=1           # IFU spectra position
 DO_WAVE_CAL=1           # wavelength calibration
 DO_IFU_FLAT=1           # IFU lenslet flat
 
+#------------------------------------------------------------------
 # pre-processing
+#------------------------------------------------------------------
 DO_PREPROC=0            # perform pre-processing
 
 DO_COLLAPSE=1           # collapse cubes
@@ -236,8 +242,11 @@ COLLAPSE_VAL=5          # collapse parameter (for mean, angle and coadd)
 COLLAPSE_TOL=0.05       # collapse parameter tolerance (for mean and angle)
 
 USE_SKY=1               # if available, use preferably a sky instead of a dark/background
+COLLAPSE_PSF=1          # mean-collapse PSF cubes
 
+#------------------------------------------------------------------
 # science data reduction
+#------------------------------------------------------------------
 DO_SCIENCE=0            # perform science
 
 DO_SCI_CORO=1           # process science data
@@ -245,7 +254,9 @@ DO_SCI_LMBD=1           # process wave cal cube
 
 DO_POSTPROC=1           # perform post-processing on (x,y,lambda) cubes
 
+#------------------------------------------------------------------
 # additional suffix
+#------------------------------------------------------------------
 SUFFIX=
 SUFFIX_PSF=
 
@@ -261,7 +272,10 @@ if [ ! -d ${ROOT}products ]; then mkdir ${ROOT}products; fi
 if [ $DO_COLLAPSE -ne 0 ]; then
     SUFFIX=${SUFFIX}_col_${COLLAPSE_TYPE}
 fi
-SUFFIX_PSF=${SUFFIX_PSF}_col_mean
+
+if [ $COLLAPSE_PSF -ne 0 ]; then
+    SUFFIX_PSF=${SUFFIX_PSF}_col_mean
+fi
 
 if [ $DO_BKG_SUB -ne 0 ]; then
     SUFFIX=${SUFFIX}_bkg
@@ -281,9 +295,11 @@ fi
 #
 # SORT FILES
 #
+echo ${ROOT}
+echo
 echo 'List of files in raw directory:'
 cd ${ROOT}raw/
-dfits *.fits | fitsort dpr.type ins2.comb.ifs det.seq1.dit det.ndit tel.parang.start
+dfits *.fits | fitsort dpr.type ins2.comb.ifs det.seq1.dit det.ndit tel.parang.{start,end}
 cd ${ROOT}
 echo
 echo
@@ -436,7 +452,7 @@ echo
 
 echo '* PSF data dark files:'
 DIT=`dfits ${ROOT}raw/${sci_files_psf[0]}.fits | fitsort det.seq1.dit | grep -v FILE | awk '{print $2}'`
-dark_files_psf=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep DARK | grep "${DIT}" | awk '{print $1}'`)
+dark_files_psf=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep DARK | grep -w "${DIT}" | awk '{print $1}'`)
 for (( i = 0 ; i < ${#dark_files_psf[@]} ; i++ )); do dark_files_psf[$i]=`basename ${dark_files_psf[$i]} .fits`; echo "  + ${dark_files_psf[$i]}"; done
 if [ $DO_SANITY_CHECK -ne 0 ]; then
     if [ ${#dark_files_psf[@]} -eq 0 ]; then
@@ -447,7 +463,7 @@ echo
 
 echo '* Star center dark files:'
 DIT=`dfits ${ROOT}raw/${sci_files_cen[0]}.fits | fitsort det.seq1.dit | grep -v FILE | awk '{print $2}'`
-dark_files_cen=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep DARK | grep "${DIT}" | awk '{print $1}'`)
+dark_files_cen=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep DARK | grep -w "${DIT}" | awk '{print $1}'`)
 for (( i = 0 ; i < ${#dark_files_cen[@]} ; i++ )); do dark_files_cen[$i]=`basename ${dark_files_cen[$i]} .fits`; echo "  + ${dark_files_cen[$i]}"; done
 if [ $DO_SANITY_CHECK -ne 0 ]; then
     if [ ${#dark_files_cen[@]} -eq 0 ]; then
@@ -458,7 +474,7 @@ echo
 
 echo '* Corono data dark files:'
 DIT=`dfits ${ROOT}raw/${sci_files_cor[0]}.fits | fitsort det.seq1.dit | grep -v FILE | awk '{print $2}'`
-dark_files_cor=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep DARK | grep "${DIT}" | awk '{print $1}'`)
+dark_files_cor=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep DARK | grep -w "${DIT}" | awk '{print $1}'`)
 for (( i = 0 ; i < ${#dark_files_cor[@]} ; i++ )); do dark_files_cor[$i]=`basename ${dark_files_cor[$i]} .fits`; echo "  + ${dark_files_cor[$i]}"; done
 if [ $DO_SANITY_CHECK -ne 0 ]; then
     if [ ${#dark_files_cor[@]} -eq 0 ]; then
@@ -472,7 +488,7 @@ echo
 #
 echo '* PSF data sky files:'
 DIT=`dfits ${ROOT}raw/${sci_files_psf[0]}.fits | fitsort det.seq1.dit | grep -v FILE | awk '{print $2}'`
-sky_files_psf=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep SKY | grep "${DIT}" | awk '{print $1}'`)
+sky_files_psf=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep SKY | grep -w "${DIT}" | awk '{print $1}'`)
 for (( i = 0 ; i < ${#sky_files_psf[@]} ; i++ )); do sky_files_psf[$i]=`basename ${sky_files_psf[$i]} .fits`; echo "  + ${sky_files_psf[$i]}"; done
 if [ $DO_SANITY_CHECK -ne 0 ]; then
     if [ ${#sky_files_psf[@]} -eq 0 ]; then
@@ -483,7 +499,7 @@ echo
 
 echo '* Star center sky files:'
 DIT=`dfits ${ROOT}raw/${sci_files_cen[0]}.fits | fitsort det.seq1.dit | grep -v FILE | awk '{print $2}'`
-sky_files_cen=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep SKY | grep "${DIT}" | awk '{print $1}'`)
+sky_files_cen=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep SKY | grep -w "${DIT}" | awk '{print $1}'`)
 for (( i = 0 ; i < ${#sky_files_cen[@]} ; i++ )); do sky_files_cen[$i]=`basename ${sky_files_cen[$i]} .fits`; echo "  + ${sky_files_cen[$i]}"; done
 if [ $DO_SANITY_CHECK -ne 0 ]; then
     if [ ${#sky_files_cen[@]} -eq 0 ]; then
@@ -494,7 +510,7 @@ echo
 
 echo '* Corono data sky files:'
 DIT=`dfits ${ROOT}raw/${sci_files_cor[0]}.fits | fitsort det.seq1.dit | grep -v FILE | awk '{print $2}'`
-sky_files_cor=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep SKY | grep "${DIT}" | awk '{print $1}'`)
+sky_files_cor=(`dfits ${ROOT}raw/SPHER*[0-9].fits | fitsort dpr.type det.seq1.dit | grep SKY | grep -w "${DIT}" | awk '{print $1}'`)
 for (( i = 0 ; i < ${#sky_files_cor[@]} ; i++ )); do sky_files_cor[$i]=`basename ${sky_files_cor[$i]} .fits`; echo "  + ${sky_files_cor[$i]}"; done
 if [ $DO_SANITY_CHECK -ne 0 ]; then
     if [ ${#sky_files_cor[@]} -eq 0 ]; then
@@ -517,6 +533,26 @@ else
     WAFFLE_OBS=0
 fi 
 echo
+
+#
+# list science files for the IDL part of the pipeline
+#
+FILE=${ROOT}products/file_list.dat
+
+list_files_wav=$(printf ",%s" "${wave_files[@]}")
+list_files_psf=$(printf ",%s" "${sci_files_psf[@]}")
+list_files_cen=$(printf ",%s" "${sci_files_cen[@]}")
+list_files_cor=$(printf ",%s" "${sci_files_cor[@]}")
+
+list_files_wav=${list_files_wav:1}
+list_files_psf=${list_files_psf:1}
+list_files_cen=${list_files_cen:1}
+list_files_cor=${list_files_cor:1}
+
+echo "wave_file : ${list_files_wav[*]}" > ${FILE}
+echo "cent_file : ${list_files_cen[*]}" >> ${FILE}
+echo "flux_file : ${list_files_psf[*]}" >> ${FILE}
+echo "coro_file : ${list_files_cor[*]}" >> ${FILE}
 
 #
 # basic calibrations
@@ -704,17 +740,6 @@ if [ $DO_CALIB -ne 0 ]; then
         echo "${ROOT}calib/dark_bpm_cen.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         echo "${ROOT}calib/dark_bpm_cor.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         
-        # esorex --msg-level=debug sph_ifs_master_detector_flat \
-        # 	   --ifs.master_detector_flat.save_addprod=TRUE \
-        # 	   --ifs.master_detector_flat.outfilename=${ROOT}calib/master_detector_flat_white_drh.fits \
-        # 	   --ifs.master_detector_flat.lss_outfilename=${ROOT}calib/large_scale_flat_white_drh.fits \
-        # 	   --ifs.master_detector_flat.preamp_outfilename=${ROOT}calib/preamp_flat_white_drh.fits \
-        # 	   --ifs.master_detector_flat.badpixfilename=${ROOT}calib/dff_badpixelname_white_drh.fits \
-        # 	   --ifs.master_detector_flat.lambda=-1.0 \
-        # 	   --ifs.master_detector_flat.smoothing_length=10.0 \
-        # 	   --ifs.master_detector_flat.smoothing_method=1 \
-        # 	   ${SOF}
-        
         FFNAME=${ROOT}calib/master_detector_flat_white.fits
         BPNAME=${ROOT}calib/dff_badpixelname_white.fits
         idl -e sph_ifs_detector_flat_manual -args ${SOF} ${FFNAME} ${BPNAME}
@@ -738,17 +763,6 @@ if [ $DO_CALIB -ne 0 ]; then
         echo "${ROOT}calib/dark_bpm_cen.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         echo "${ROOT}calib/dark_bpm_cor.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         
-        # esorex --msg-level=debug sph_ifs_master_detector_flat \
-        # 	   --ifs.master_detector_flat.save_addprod=TRUE \
-        # 	   --ifs.master_detector_flat.outfilename=${ROOT}calib/master_detector_flat_1020.fits \
-        # 	   --ifs.master_detector_flat.lss_outfilename=${ROOT}calib/large_scale_flat_1020.fits \
-        # 	   --ifs.master_detector_flat.preamp_outfilename=${ROOT}calib/preamp_flat_1020.fits \
-        # 	   --ifs.master_detector_flat.badpixfilename=${ROOT}calib/dff_badpixelname_1020.fits \
-        # 	   --ifs.master_detector_flat.lambda=1.020 \
-        # 	   --ifs.master_detector_flat.smoothing_length=10.0 \
-        # 	   --ifs.master_detector_flat.smoothing_method=1 \
-        # 	   ${SOF}
-
         FFNAME=${ROOT}calib/master_detector_flat_1020.fits
         BPNAME=${ROOT}calib/dff_badpixelname_1020.fits
         idl -e sph_ifs_detector_flat_manual -args ${SOF} ${FFNAME} ${BPNAME}
@@ -771,17 +785,6 @@ if [ $DO_CALIB -ne 0 ]; then
         echo "${ROOT}calib/dark_bpm_cen.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         echo "${ROOT}calib/dark_bpm_cor.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         
-        # esorex --msg-level=debug sph_ifs_master_detector_flat \
-        # 	   --ifs.master_detector_flat.save_addprod=TRUE \
-        # 	   --ifs.master_detector_flat.outfilename=${ROOT}calib/master_detector_flat_1230.fits \
-        # 	   --ifs.master_detector_flat.lss_outfilename=${ROOT}calib/large_scale_flat_1230.fits \
-        # 	   --ifs.master_detector_flat.preamp_outfilename=${ROOT}calib/preamp_flat_1230.fits \
-        # 	   --ifs.master_detector_flat.badpixfilename=${ROOT}calib/dff_badpixelname_1230.fits \
-        # 	   --ifs.master_detector_flat.lambda=1.230 \
-        # 	   --ifs.master_detector_flat.smoothing_length=10.0 \
-        # 	   --ifs.master_detector_flat.smoothing_method=1 \
-        # 	   ${SOF}
-
         FFNAME=${ROOT}calib/master_detector_flat_1230.fits
         BPNAME=${ROOT}calib/dff_badpixelname_1230.fits
         idl -e sph_ifs_detector_flat_manual -args ${SOF} ${FFNAME} ${BPNAME}
@@ -804,17 +807,6 @@ if [ $DO_CALIB -ne 0 ]; then
         echo "${ROOT}calib/dark_bpm_cen.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         echo "${ROOT}calib/dark_bpm_cor.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
         
-        # esorex --msg-level=debug sph_ifs_master_detector_flat \
-        # 	   --ifs.master_detector_flat.save_addprod=TRUE \
-        # 	   --ifs.master_detector_flat.outfilename=${ROOT}calib/master_detector_flat_1300.fits \
-        # 	   --ifs.master_detector_flat.lss_outfilename=${ROOT}calib/large_scale_flat_1300.fits \
-        # 	   --ifs.master_detector_flat.preamp_outfilename=${ROOT}calib/preamp_flat_1300.fits \
-        # 	   --ifs.master_detector_flat.badpixfilename=${ROOT}calib/dff_badpixelname_1300.fits \
-        # 	   --ifs.master_detector_flat.lambda=1.300 \
-        # 	   --ifs.master_detector_flat.smoothing_length=10.0 \
-        # 	   --ifs.master_detector_flat.smoothing_method=1 \
-        # 	   ${SOF}
-
         FFNAME=${ROOT}calib/master_detector_flat_1300.fits
         BPNAME=${ROOT}calib/dff_badpixelname_1300.fits
         idl -e sph_ifs_detector_flat_manual -args ${SOF} ${FFNAME} ${BPNAME}
@@ -837,17 +829,6 @@ if [ $DO_CALIB -ne 0 ]; then
 	    echo "${ROOT}calib/dark_bpm_cal.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
 	    echo "${ROOT}calib/dark_bpm_cen.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
 	    echo "${ROOT}calib/dark_bpm_cor.fits   IFS_STATIC_BADPIXELMAP"      >> ${SOF}
-	    
-	    # esorex --msg-level=debug sph_ifs_master_detector_flat \
-	    #        --ifs.master_detector_flat.save_addprod=TRUE \
-	    #        --ifs.master_detector_flat.outfilename=${ROOT}calib/master_detector_flat_1550.fits \
-	    #        --ifs.master_detector_flat.lss_outfilename=${ROOT}calib/large_scale_flat_1550.fits \
-	    #        --ifs.master_detector_flat.preamp_outfilename=${ROOT}calib/preamp_flat_1550.fits \
-	    #        --ifs.master_detector_flat.badpixfilename=${ROOT}calib/dff_badpixelname_1550.fits \
-	    #        --ifs.master_detector_flat.lambda=1.550 \
-	    #        --ifs.master_detector_flat.smoothing_length=10.0 \
-	    #        --ifs.master_detector_flat.smoothing_method=1 \
-	    #        ${SOF}
 	    
 	    FFNAME=${ROOT}calib/master_detector_flat_1550.fits
 	    BPNAME=${ROOT}calib/dff_badpixelname_1550.fits
@@ -972,12 +953,12 @@ if [ $DO_PREPROC -ne 0 ]; then
 	fi
 	
 	# always collapse off-axis PSF
-	idl -e sph_ifs_preprocess -args ${SOF} 1 ${DO_BKG_SUB} ${DO_BADPIXEL} ${DO_CROSSTALK} MEAN 0.0 0.0
+	idl -e sph_ifs_preprocess -args ${SOF} ${COLLAPSE_PSF} ${DO_BKG_SUB} ${DO_BADPIXEL} ${DO_CROSSTALK} MEAN 0.0 0.0
 	if [ $? -ne 0 ]; then
     	    echo "IDL returned an error value. Stopping here..."
     	    exit 1
 	fi
-    fi
+    fi    
     
     #
     # star center
@@ -1157,15 +1138,11 @@ if [ $DO_SCIENCE -ne 0 ]; then
         do
     	    echo "${ROOT}raw/${f}.fits          IFS_RAW"                >> ${SOF}
         done
-        # for f in ${ifu_files[*]}
-        # do
-        #     echo "${ROOT}raw/${f}.fits          IFS_RAW"                >> ${SOF}
-        # done
         echo "${ROOT}calib/dark_cal.fits        IFS_MASTER_DARK"        >> ${SOF}
         echo "${ROOT}calib/dark_bpm_psf.fits    IFS_STATIC_BADPIXELMAP" >> ${SOF}
 
-        # collapse, no background subtraction, bad pixel correction, crosstalk correction
-        idl -e sph_ifs_preprocess -args ${SOF} 1 0 1 1 MEAN 0.0 0.0
+        # collapse, background subtraction, no bad pixel correction, crosstalk correction
+        idl -e sph_ifs_preprocess -args ${SOF} 1 1 0 1 MEAN 0.0 0.0
         if [ $? -ne 0 ]; then
     	    echo "IDL returned an error value. Stopping here..."
     	    exit 1
@@ -1175,7 +1152,7 @@ if [ $DO_SCIENCE -ne 0 ]; then
         # move to preprocessed directory
         #
         mv ${ROOT}raw/*preproc*.fits ${ROOT}interm/
-
+        
         #
         # wavelength calib <==> science
         #
@@ -1184,12 +1161,8 @@ if [ $DO_SCIENCE -ne 0 ]; then
         if [ -f ${SOF} ]; then rm ${SOF}; fi
         for f in ${wave_files[*]}
         do
-    	    echo "${ROOT}interm/${f}_preproc_col_mean_bp_ct.fits    IFS_SCIENCE_DR_RAW"     >> ${SOF}
+    	    echo "${ROOT}interm/${f}_preproc_col_mean_bkg_ct.fits    IFS_SCIENCE_DR_RAW"     >> ${SOF}
         done
-        # for f in ${ifu_files[*]}
-        # do
-        #     echo "${ROOT}interm/${f}_preproc_col_mean_bp_ct.fits    IFS_SCIENCE_DR_RAW"     >> ${SOF}
-        # done
         echo "${ROOT}calib/master_detector_flat_1020_l1.fits        IFS_MASTER_DFF_LONG1"   >> ${SOF}
         echo "${ROOT}calib/master_detector_flat_1230_l2.fits        IFS_MASTER_DFF_LONG2"   >> ${SOF}
         echo "${ROOT}calib/master_detector_flat_1300_l3.fits        IFS_MASTER_DFF_LONG3"   >> ${SOF}
@@ -1206,7 +1179,7 @@ if [ $DO_SCIENCE -ne 0 ]; then
     	       --ifs.science_dr.use_adi=0 \
     	       --ifs.science_dr.spec_deconv=FALSE \
     	       ${SOF}
-
+        
         if [ $DO_POSTPROC -ne 0 ]; then
     	    idl -e sph_ifs_postprocess -args ${SOF}
     	    if [ $? -ne 0 ]; then
@@ -1218,7 +1191,7 @@ if [ $DO_SCIENCE -ne 0 ]; then
         #
         # move products to final directory
         #
-        mv ${ROOT}SPHER*_mean_bp_ct*.fits ${ROOT}products/
+        mv ${ROOT}SPHER*_mean_bkg_ct*.fits ${ROOT}products/
     fi
 
 fi
