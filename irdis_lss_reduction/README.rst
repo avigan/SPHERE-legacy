@@ -17,13 +17,13 @@ Credits
 
 If you use this pipeline, please cite the following reference:
 
- * `Vigan, 2016, ASCL:1603.001 <https://ui.adsabs.harvard.edu/#abs/2016ascl.soft03001V/abstract>`_
+* `Vigan, 2016, ASCL:1603.001 <https://ui.adsabs.harvard.edu/#abs/2016ascl.soft03001V/abstract>`_
 
 The development of the SPHERE instrument has demanded a tremendous effort from many scientists, who have devoted several years of their life to design, build, test and commission the instrument. To recognize this work, we kindly ask you to cite the relevant instrumental papers in your scientific work. The reference papers for SPHERE and the IRDIS/LSS mode are:
 
- * SPHERE general description: `Beuzit et al., 2008, SPIE, <https://ui.adsabs.harvard.edu/#abs/2008SPIE.7014E..18B/abstract>`_
- * IRDIS general description: `Dohlen et al., 2008, SPIE, 7014 <https://ui.adsabs.harvard.edu/#abs/2008SPIE.7014E..3LD/abstract>`_
- * Long-slit spectroscopy mode: `Vigan et al., 2008, A&A, 489, 1345 <https://ui.adsabs.harvard.edu/#abs/2008A&A...489.1345V/abstract>`_
+* SPHERE general description: `Beuzit et al., 2008, SPIE, <https://ui.adsabs.harvard.edu/#abs/2008SPIE.7014E..18B/abstract>`_
+* IRDIS general description: `Dohlen et al., 2008, SPIE, 7014 <https://ui.adsabs.harvard.edu/#abs/2008SPIE.7014E..3LD/abstract>`_
+* Long-slit spectroscopy mode: `Vigan et al., 2008, A&A, 489, 1345 <https://ui.adsabs.harvard.edu/#abs/2008A&A...489.1345V/abstract>`_
 
 We are grateful for your effort, and hope that these tools will contribute to your scientific work and discoveries. Please feel free to report any bug or possible improvement to the author(s).
 
