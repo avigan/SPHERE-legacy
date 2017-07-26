@@ -36,12 +36,19 @@
 #  (.Z or .gz extension), and the file name should be in the standard
 #  archive form (e.g. SPHER.2015-02-03T06:47:27.430.fits).
 #
-#  Then the first step is to do a sanity check (DO_SANITY_CHECK=1). It
-#  will list the FITS files and will check that all required files (in
-#  particular calibrations) are available. For each expected file type
-#  it will display the available file names and some warning/error
-#  messages if it notices potential problems. Any IFS sequence will
-#  require the following files and calibrations:
+#  When sorting the frames, the script will produce a file called
+#  "file_list.dat" in the products/ sub-directory. This file contains
+#  the file names for the wavelength calibration, star center, flux
+#  and coronagraphic images. It will be used subsequently in the IDL
+#  part of the pipeline.
+#
+#  The first step of each analysis is to do a sanity check
+#  (DO_SANITY_CHECK=1). It will list the FITS files and will check
+#  that all required files (in particular calibrations) are
+#  available. For each expected file type it will display the
+#  available file names and some warning/error messages if it notices
+#  potential problems. Any IFS sequence will require the following
+#  files and calibrations:
 #
 #    * science files of type O, C or F (not all are required)
 #    * dark/background with DITs corresponding to the science
@@ -54,13 +61,13 @@
 #    * spectra positions: 1 file (YJ and YJH modes)
 #    * wavelength calibration: 1 file (YJ and YJH modes)
 #    * IFU flat: 1 file (YJ and YJH modes)
-#    * dark for the calibration: 1 file, usually taken at minimum DIT (1.6 sec)
+#    * dark for the calibration: 1 file, taken at minimum DIT (1.65 sec)
 #
 #  If all these files are available in the raw/ sub-directory, the
 #  sanity check should display no errors (but possibly some
-#  warnings). If you obtain errors, usually because some files are
-#  missing, read the explanation carefully. After the sanity check,
-#  the script automatically exits and you have to set
+#  warnings). If you obtain errors, usually this is because some files
+#  are missing, so read the explanation carefully. After the sanity
+#  check, the script automatically exits and you have to set
 #  DO_SANITY_CHECK=0 to proceed with the data reduction.
 #
 #  The second step is to create the basic calibrations:
@@ -99,11 +106,23 @@
 #  (background subtraction, bad pixel correction and crosstalk
 #  correction).
 #
+#  If you want to "collapse" the data, e.g. to reduce the number of
+#  frames and/or if there is very little field-of-view rotation over a
+#  sequence, there are different options. The collapse type can be:
+#
+#    * mean: the frames of each cube are mean-combined
+#    * coadd: frames are coadded together in the cubes, by an amount
+#      that is given by the COLLAPSE_VAL keyword. For instance, if you
+#      have a cube with NDIT=20, COLLAPSE_TYPE=coadd and *
+#      COLLAPSE_VAL=4, the routine will average frames by groups of 4
+#      and will produce a final cube of NDIT=5
+#    * angle: rarely used. See documentation of sph_ifs_preprocess()
+#
 #  For the pre-processing step, there is the additional USE_SKY
 #  keyword. This keyword forces the use of sky backgrounds if both
 #  instrumental dark/backgrounds and sky backgrounds are
-#  available. This usually provides slightly better cosmetics and
-#  should be left enabled by default.
+#  available. Using sky backgrounds usually provides better cosmetics
+#  and should be left enabled by default.
 #
 #  Once pre-processing is done, you can set DO_PREPROC=0 before going
 #  to the next step.
@@ -232,12 +251,12 @@ DO_IFU_FLAT=1           # IFU lenslet flat
 #------------------------------------------------------------------
 DO_PREPROC=0            # perform pre-processing
 
-DO_COLLAPSE=1           # collapse cubes
+DO_COLLAPSE=0           # collapse cubes
 DO_BKG_SUB=1            # subtract dark/background or sky
 DO_BADPIXEL=1           # correct bad pixels
 DO_CROSSTALK=1          # correct spectral cross-talk
 
-COLLAPSE_TYPE=coadd     # collapse type: mean, angle, coadd
+COLLAPSE_TYPE=mean     # collapse type: mean, coadd, angle
 COLLAPSE_VAL=5          # collapse parameter (for mean, angle and coadd)
 COLLAPSE_TOL=0.05       # collapse parameter tolerance (for mean and angle)
 
