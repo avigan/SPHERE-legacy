@@ -307,7 +307,7 @@
 ;
 ;   It can be cited explicitely:
 ;
-;    * Vigan, 2016, ascl:1603.001
+;    * Vigan, 2016, ASCL, 1603.001
 ;
 ;   We are grateful for your effort, and hope that this tool will
 ;   contribute to your scientific work and discoveries. Please feel
