@@ -20,28 +20,19 @@
 ;  pixels, recalibrate the wavelength using a star center (C) frame
 ;  and combine all the data inside a single data cube.
 ;
-;  For the procedure to work, you have to enter some basic information
-;  concerning your reduction:
+;  For the procedure to work, you just have to enter the root
+;  directory of the analysis:
 ;
 ;    ROOT - path to the data reduction directory. It should be the
 ;           same at the one you have used in the data_reduction_ifs.sh
 ;           program
 ;
-;    WAVE_FILE - name of the raw wavelength calibration file
+;  The pipeline will automatically read the "file_list.dat" produced
+;  by the data_reduction_ifs.sh script in the products/ sub-directory.
 ;
-;    CENT_FILE - name of the raw star center (C) calibration file. If
-;                you have several in your observing sequence, you
-;                should normally be able to use any of them
-;
-;    FLUX_FILE - name of the raw off-axis PSF (F) files. The variable
-;                is a vector that can contain several file names
-;
-;    CORO_FILE - name of the science (O or C) files. The variable is a
-;                vector that can contain several file names
-;
-;  Once the path and file names have been specified, you can execute
-;  the three calibration steps sequentially. They are controled by the
-;  keywords at the beginning: DO_CLEAN, DO_CENTER and DO_COMBINE.
+;  The three calibration steps contained in this script are executed
+;  sequentially. Their execution is controled by the keywords at the
+;  beginning: DO_CLEAN, DO_CENTER and DO_COMBINE.
 ;
 ;  The DO_CLEAN step uses sigma-clipping to identify the remaining
 ;  bad pixels, and then the maskinterp() routine to correct for
@@ -82,26 +73,30 @@
 ;  cubes into a single master cube. The frames are centered using
 ;  either a FFT-based or interpolation-based subpixel shift
 ;  procedures. The procedure to be used can be specified with the
-;  FFT_SHIFT variable variable below the control keywords. Note that
-;  FFT-based routine is NOT provided with the pipeline. Replace it by
-;  your own or use the provided interpolation-based routine. This step
-;  has three outputs that are saved as FITS files in the products/
-;  subdirectory:
+;  FFT_SHIFT variable variable below the control keywords.
+;
+;  This step has three outputs that are saved as FITS files in the
+;  products/ subdirectory:
 ;
 ;     - data_cube_psf.fits: data cube containing all the off-axis PSFs 
 ;
 ;     - data_cube_coro.fits: data cube containing all the science data
 ;
-;     - data_cube_info.fits: binary FITS table containing the basic
-;                           information for all science frames (see
-;                           details below)
+;     - data_info.fits: binary FITS table containing the basic
+;                       information for all science frames (see
+;                       details below)
+;
+;     - data_derot_angles.fits: vector with the derotation angles of
+;                               each science frame. This is the sum of
+;                               the parallactic angle AND the pupil
+;                               offset (see details below)
 ;
 ;  IMPORTANT: during this combination step, each frame is normalized
 ;  to a DIT of 1 second, and the effect of any neutral density filter
 ;  that was in the optical path during the observation (e.g. for the
 ;  off-axis PSF) is compensated for.
 ;
-;  The data_cube_info.fits contains a binary FITS table with as many
+;  The data_info.fits contains a binary FITS table with as many
 ;  entries as the number of science frames (DITs). Each entry contains
 ;  the basic information about each frame: time (at start/middle/end
 ;  of the exposure), hour angle (start/middle/end), parallactic angle
@@ -110,23 +105,33 @@
 ;
 ;    IDL> info = mrdfits('data_info.fits',1)   ;; read data
 ;    IDL> plot,info[*].time,info[*].pa         ;; plot pa values
-;    IDL> pa = info[*].pa                      ;; extract pa vector
 ;
 ;  The pupil offset value corresponds to a fixed angular offset when
 ;  the instrument is used in pupil-tracking (for angular differential
 ;  imaging). It is fixed for all observations, although there is an
 ;  entry in the table for each science frame. The value is hard-coded
 ;  in the reduction pipeline and has been calibrated during various
-;  commissionings. However, it does not take into account any fine
-;  true North orientation correction that would be required for
-;  accurate astrometry. Below is a simple IDL example that shows how
-;  to use the table values to derotate your frames at the end of an
-;  ADI analysis for all cubes and wavelengths:
+;  commissionings.
 ;
+;  To make things easier, the code saves a file called
+;  "data_derot_angles.fits", which contains the consolidated value of
+;  the derotation angle taking into account the parallactic angle and
+;  the pupil offset. On top of that, there is also a fine true North
+;  orientation correction that is required for accurate
+;  astrometry. The mean value of the true North correction is -1.75
+;  deg (see Maire et al. 2016, SPIE, 9908).
+;
+;  Here is a simple IDL example that shows how to derotate your
+;  frames at the end of an ADI analysis for all cubes and wavelengths,
+;  taking into account the true North correction:
+;
+;    derot_angles = readfits('data_derot_angles.fits')
+;    true_north = -1.75
 ;    for c=0,ncubes-1 do begin
 ;       for l=0,nlambda-1 do begin
 ;          frame = cube[*,*,l,c]
-;          cube[*,*,l,c] = rot(frame,-parang[c]-pupoff,1.0,cx,cy)
+;          ;; clockwise rotation
+;          cube[*,*,l,c] = rot(frame,-derot_angles[c]-true_north,1.0,cx,cy)
 ;       endfor
 ;    endfor
 ;
@@ -738,9 +743,13 @@ if keyword_set(do_combine) then begin
    deriv = (frames.pa_end-shift(frames.pa_end,1))[1:*]
    if (max(abs(deriv)) gt 180.) then frames[where(frames.pa_end lt 0)].pa_end += 360
 
-   ;; save data
+   ;; save data info
    writefits,root+'/products/'+'data_cube_coro.fits',cube_noscl
-   mwrfits,frames,root+'/products/'+'data_info.fits',/create   
+   mwrfits,frames,root+'/products/'+'data_info.fits',/create
+
+   ;; save derotation angles
+   derot_angles = frame.pa + frames.pupoff
+   writefits,root+'/products/'+'data_derot_angles.fits',derot_angles
 endif
 
 if keyword_set(do_erase) then begin
