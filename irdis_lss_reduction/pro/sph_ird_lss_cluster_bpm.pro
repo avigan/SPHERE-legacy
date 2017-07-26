@@ -25,6 +25,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;  25/07/2017 - arthur.vigan@lam.fr
+;  Transition to GitHub
+;
 ;  28/01/2016 - arthur.vigan@lam.fr
 ;  Created
 ;

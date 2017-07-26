@@ -12,15 +12,15 @@
 ;
 ; PURPOSE:
 ;
-;  Locally Optimized Combination of Spectra
-;  Performs speckle estimation to create a "synthetic" spectrum using
-;  an application of the LOCI for spectral deconvolution of IRDIS
-;  spectra
+;  Locally Optimized Combination of Spectra Performs speckle
+;  estimation to create a "synthetic" spectrum using an application of
+;  the LOCI for spectral deconvolution of IRDIS spectra
 ;
 ; CALLING SEQUENCE:
 ;
 ;   synth = SYNTHETIC_LOCS(sig_over,lambda,use_mask,pla_mask, $
 ;                          PIXEL=pixel,LAMBDA_REF=lambda_ref, $
+;                          SPATIAL=spatial,SPECTRAL=spectral, $
 ;                          LOCS_CRIT=locs_crit,SILENT=silent)
 ;
 ; DESCRIPTION:
@@ -64,7 +64,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;  28/01/2016 - arthur.vigan - implemented a spatial version of the fit
+;  25/07/2017 - arthur.vigan@lam.fr
+;  Transition to GitHub
+;
+;  28/01/2016 - arthur.vigan
+;  implemented a spatial version of the fit. Not functionnal yet
 ;
 ;  22/01/2013 - arthur.vigan@lam.fr
 ;  imp: added descriptive header with proper documentation
@@ -160,8 +164,8 @@ function synthetic_locs_spectral,sig_over,lambda,use_mask,pla_mask, $
      bvls,AA,BB,bnd,coeff
      ;; coeff = la_linear_equation(AA,BB,status=status)
      
-     ii = where(coeff ne 0,nii)
-     print,nii,n_elements(coeff)
+     ;; ii = where(coeff ne 0,nii)
+     ;; print,nii,n_elements(coeff)
      
      ;; synthetic spectrum
      synthetic_over[*,l] = ref # coeff
@@ -232,16 +236,6 @@ function synthetic_locs_spatial,sig_over,lambda,use_mask,pla_mask, $
 
      ldown = lmin
      lup   = nlambda-lmax
-     
-     ;; plot
-     ;; loadct,39,/silent
-     ;; plot,lambda,psep,/yno,xs=1
-     ;; oplot,lambda,pla_r_min,color=250
-     ;; oplot,lambda,pla_r_max,color=50
-     ;; plots,lambda[l],psep[l],linestyle=2,psym=4
-     ;; if (lmin ne -1) then plots,lambda[lmin],!y.crange,linestyle=2
-     ;; if (lmax ne -1) then plots,lambda[lmax],!y.crange,linestyle=2
-     ;; hak
      
      if (ldown ge lup) or (lmax eq -1) then begin
         idx = indgen(lmin)
@@ -321,13 +315,14 @@ function synthetic_locs,sig_over,lambda,use_mask,pla_mask, $
                         SPATIAL=spatial,SPECTRAL=spectral
   synthetic = 0
   
-  ;; default is SPATIAL
+  ;; default is SPECTRAL
   if ~keyword_set(spatial) and ~keyword_set(spectral) then spectral = 1
 
   if keyword_set(spatial) and keyword_set(spectral) then $
      message,'You cannot set both SPATIAL and SPECTRAL. You have to choose on (default=SPECTRAL).'
 
   if keyword_set(spatial) then begin
+     message,'The SPATIAL version of LOCS is not functionnal yet'
      synthetic = synthetic_locs_spatial(sig_over,lambda,use_mask,pla_mask, $
                                         PIXEL=pixel,LAMBDA_REF=lambda_ref, $
                                         PLANET_SEP=pla_sep,PLANET_SIZE=pla_size, $

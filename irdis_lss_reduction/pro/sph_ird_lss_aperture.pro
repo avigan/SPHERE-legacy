@@ -60,6 +60,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;  25/07/2017 - arthur.vigan@lam.fr
+;  Transition to GitHub
+;
 ;  16/10/2014 - arthur.vigan@lam.fr
 ;  add: UPSCALE keyword and corresponding calculations
 ;

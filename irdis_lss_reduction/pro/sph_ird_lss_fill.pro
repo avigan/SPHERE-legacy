@@ -60,6 +60,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;  25/07/2017 - arthur.vigan@lam.fr
+;  Transition to GitHub
+;
 ;  09/04/2015 - arthur.vigan@lam.fr
 ;  add: possibility to use the original data to fill the gap
 ;

@@ -90,6 +90,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;  25/07/2017 - arthur.vigan@lam.fr
+;  Transition to GitHub
+;
 ;  22/01/2013 - arthur.vigan@lam.fr
 ;  imp: changed some keywords to improve the name
 ;  fix: fixed a bug that created a non symmetric mask with respect to

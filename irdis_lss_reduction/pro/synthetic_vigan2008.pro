@@ -59,6 +59,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;  25/07/2017 - arthur.vigan@lam.fr
+;  Transition to GitHub
+;
 ;  22/01/2013 - arthur.vigan@lam.fr
 ;  imp: added descriptive header with proper documentation
 ;  add: added the TR_LIMIT keyword
