@@ -362,7 +362,7 @@ pro sph_ifs_preprocess
      ;; PA_on-sky = PA_detector + PARANGLE + True_North + PUPOFFSET + IFSOFFSET
      ;; PUPOFFSET = 135.99±0.11
      ;; IFSOFFSET = 100.48±0.0.10
-     if (DROT_mode eq 'ELEV') then pupoff = 135.99D - 100.48D else pupoff = 0D
+     if (DROT_mode eq 'ELEV') then pupoff = 135.99D - 100.48D else pupoff = -100.48D
      
      ;; observatory for PA calculation
      geolat = sxpar_eso(hdr,'HIERARCH ESO TEL GEOLAT')

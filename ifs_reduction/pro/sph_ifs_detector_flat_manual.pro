@@ -203,9 +203,6 @@ pro sph_ifs_detector_flat_manual
 
   flat_sub = ff1 - ff0
 
-  fake_flat = replicate(1.0,2048,2048)
-  fake_dark = replicate(0.0,2048,2048)
-  
   nflat = maskinterp(flat_sub,bpm,1,6,'csplinterp',gpix=10,gpoints=5,cdis=2)
   nflat = sigma_filter(nflat,5.,n_sigma=5,n_change=nchange)
   nflat = sigma_filter(nflat,5.,N_sigma=3,radius=3,/iterate,n_change=n_change)
