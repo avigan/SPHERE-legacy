@@ -52,51 +52,51 @@ pro lint, a, b, c, d, i1, i2, flag=flag, cond=cnd, help=hlp
      return
   endif
   
-                                ;----------------------------------------------------------
-                                ;	Find intersection point by solving 2 simultaneous
-                                ;	parametric line equations.
-                                ;
-                                ;	L1(t) = A + t*(B-A)   Line through points A and B.
-                                ;	L2(s) = C + s*(D-C)   Line through points C and D.
-                                ;
-                                ;	At intersection point I L1(t0) = L2(s0) giving
-                                ;	XA + t0(XB-XA) = XC + s0(XD-XC)   for X
-                                ;	YA + t0(YB-YA) = YC + s0(YD-YC)   for Y.
-                                ;
-                                ;	In matrix form (Ax = b):
-                                ;
-                                ;	| (XD-XC)  -(XB-XA) | | s0 |   | (XA-XC) |
-                                ;	|                   | |    | = |         |
-                                ;	| (YD-YC)  -(YB-YA) | | t0 |   | (YA-YC) |
-                                ;
-                                ;	Solve for x (s0, t0).
-                                ;----------------------------------------------------------
+  ;;----------------------------------------------------------
+  ;;	Find intersection point by solving 2 simultaneous
+  ;;	parametric line equations.
+  ;;
+  ;;	L1(t) = A + t*(B-A)   Line through points A and B.
+  ;;	L2(s) = C + s*(D-C)   Line through points C and D.
+  ;;
+  ;;	At intersection point I L1(t0) = L2(s0) giving
+  ;;	XA + t0(XB-XA) = XC + s0(XD-XC)   for X
+  ;;	YA + t0(YB-YA) = YC + s0(YD-YC)   for Y.
+  ;;
+  ;;	In matrix form (Ax = b):
+  ;;
+  ;;	| (XD-XC)  -(XB-XA) | | s0 |   | (XA-XC) |
+  ;;	|                   | |    | = |         |
+  ;;	| (YD-YC)  -(YB-YA) | | t0 |   | (YA-YC) |
+  ;;
+  ;;	Solve for x (s0, t0).
+  ;;----------------------------------------------------------
   
-                                ;------  First test lines  -----------
-  vab = b-a                     ; Vector from A to B.
-  vcd = d-c                     ; Vector from C to D.
-  pcd = [-vcd(1),vcd(0)]	; Perpendicular to vector C to D.
-  pt = total(vab*pcd)           ; 0 if lines parallel.
-  ds = total((c-a)*pcd)         ; 0 if A is on CD.
-  flag = 1                      ; Assume 1 point.
-  if pt eq 0 then begin         ; Lines parallel.
-     if ds eq 0 then flag=2 else flag=0 ; Lines coincide.
+  ;;------  First test lines  -----------
+  vab = b-a                             ;; Vector from A to B.
+  vcd = d-c                             ;; Vector from C to D.
+  pcd = [-vcd(1),vcd(0)]                ;; Perpendicular to vector C to D.
+  pt = total(vab*pcd)                   ;; 0 if lines parallel.
+  ds = total((c-a)*pcd)                 ;; 0 if A is on CD.
+  flag = 1                              ;; Assume 1 point.
+  if pt eq 0 then begin                 ;; Lines parallel.
+     if ds eq 0 then flag=2 else flag=0 ;; Lines coincide.
   endif
   if flag ne 1 then return
   
-                                ;------  Set up matrix A for left side of the linear system  -------
+  ;;------  Set up matrix A for left side of the linear system  -------
   aa = [ [(d(0)-c(0)), -(b(0)-a(0))], $
          [(d(1)-c(1)), -(b(1)-a(1))] ]
   if keyword_set(cnd) then print,' Condition number = ',cond(aa)
   
-                                ;------  Set up right side of the linear system  --------
+  ;;------  Set up right side of the linear system  --------
   bb = [ (a(0)-c(0)), (a(1)-c(1)) ]
   
-                                ;------  Use Singular Value Decomposition and back-substitution  -----
+  ;;------  Use Singular Value Decomposition and back-substitution  -----
   svdc,aa,w,u,v,/double
   par = svsol(u,w,v,bb,/double) ; par = [s0,t0]
   
-                                ;------  Find intersection point  ---------
+  ;;------  Find intersection point  ---------
   s0 = par(0)
   t0 = par(1)
   i1 = a + t0*vab		; t0 solution.
