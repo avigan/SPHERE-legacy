@@ -447,7 +447,6 @@ if keyword_set(do_center) then begin
       parinfo[0].value = ref_lam
 
       cscale = scale_average
-      cscale = min(scale,dim=2)
       fargs = {lam_laser:lam_laser,pos_laser:pos_laser, $
                ref_idx:ref_idx,nlambda:nlambda, $
                scale_average:cscale,flux:flux,disp:1}
