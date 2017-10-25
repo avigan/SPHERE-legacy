@@ -150,7 +150,7 @@
 function sph_ird_transmission, BB_filter, DB_filter, ND_filter, ROOT=root
   on_error, 2
 
-  if ~keyword_set(root) then root = '~/IDL/work/Data/Filters/'
+  if ~keyword_set(root) then root = '~/Work/IDL/Data/Filters/'
 
   ;; removing spaces and using uppercase
   BB_filter = strupcase(strtrim(BB_filter,2))

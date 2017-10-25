@@ -102,7 +102,7 @@
 function sph_cpi_nd_transmission, ND_filter, lambda, ROOT=root
   on_error,2
   
-  if ~keyword_set(root) then root = '~/IDL/work/Data/Filters/'
+  if ~keyword_set(root) then root = '~/Work/IDL/Data/Filters/'
   
   ;; removing spaces and using uppercase
   ND_filter = strupcase(strtrim(ND_filter,2))
